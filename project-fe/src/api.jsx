@@ -3,7 +3,7 @@
    import { useNavigate } from 'react-router-dom';
 
    const api = axios.create({
-       baseURL: 'http://localhost:5000',
+       baseURL: 'https://be-rest-928661779459.us-central1.run.app/',
        withCredentials: true,
    });
 
