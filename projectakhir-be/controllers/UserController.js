@@ -153,9 +153,9 @@ async function loginHandler(req, res) {
 
                 res.cookie('refreshToken', refresh_token, {
                     httpOnly : true,
-                    sameSite : process.env.NODE_ENV === 'production',
+                    sameSite : 'none',
                     maxAge : 24*60*60*1000,
-                    secure : none,
+                    secure : true,
                 });
                 res.status(200).json({
                     status : "Success",
