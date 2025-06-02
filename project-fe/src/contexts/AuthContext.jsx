@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post('https://be-rest-928661779459.us-central1.run.app', {
+            const response = await axios.post('https://be-rest-928661779459.us-central1.run.app/login', {
                 email,
                 password
             },
