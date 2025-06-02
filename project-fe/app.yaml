@@ -1,18 +1,14 @@
-runtime: nodejs20 # Or nodejs20, or another suitable runtime if you're using a Node.js server to serve static files
-# If you're serving purely static files, you might consider the static-files handler:
-# See: https://cloud.google.com/appengine/docs/standard/nodejs/serving-static-files
+runtime: nodejs20
+service: projek  # ganti nama service kalau mau
+instance_class: F1
 
 handlers:
-# Serve all static files from the 'build' directory (or 'dist' depending on your build setup)
-- url: /(.*\.(gif|png|jpg|ico|css|js|html|map))$
-  static_files: build/\1
-  upload: build/(.*\.(gif|png|jpg|ico|css|js|html|map))$
+  - url: /
+    static_files: dist/index.html
+    upload: dist/index.html
 
-# For all other URLs, serve the index.html (for single-page applications)
-- url: /.*
-  static_files: build/index.html
-  upload: build/index.html
-  # If you need to handle routing within the client-side app:
-  # If you have a Node.js server that serves index.html and handles client-side routing,
-  # you might point this to a script instead:
-  # script: auto # Or your server script file, e.g., main.js
+  - url: /(.*)
+    static_files: dist/\1
+    upload: dist/(.*)
+
+default_expiration: "1h"
