@@ -9,7 +9,7 @@ const DB_PASSWORD = process.env.DB_PASSWORD;
 
 //menyambungkan ke database
 const db = new Sequelize('gudangsenjata','root','',{
-    host : 'localhost',
+    host : '34.60.142.253',
     dialect : "mysql"
 });
 
