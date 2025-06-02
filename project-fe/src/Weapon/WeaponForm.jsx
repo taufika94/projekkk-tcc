@@ -50,7 +50,7 @@ const WeaponForm = () => {
         } else {
             await api.post('/add-weapons', weapon);
         }
-        navigate('/weapons');
+        navigate('/home');
     } catch (err) {
         setError(err.response?.data?.message || err.message);
     } finally {

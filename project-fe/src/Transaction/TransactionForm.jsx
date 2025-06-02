@@ -74,7 +74,7 @@ const TransactionForm = () => {
       } else {
         await api.post('/add-transaction', payload);
       }
-      navigate('/transactions');
+      navigate('/home');
     } catch (err) {
       console.error('Error submitting form:', err);
     }
