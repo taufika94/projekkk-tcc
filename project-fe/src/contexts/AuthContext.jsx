@@ -35,24 +35,25 @@ export const AuthProvider = ({ children }) => {
     // }, [token]);
 
     const login = async (email, password) => {
-    try {
-        const response = await axios.post(`${BASE_API}/login`, { email, password }, { withCredentials: true });
-        const { accessToken, safeUserData } = response.data;
-        localStorage.setItem('token', accessToken);
-        setToken(accessToken);
-
-        // Set default header Authorization
-        axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-
-        setUser(safeUserData);
-        setIsAuthenticated(true);
-        navigate('/home');
-    } catch (error) {
-        console.error('Login failed:', error);
-        throw error;
-    }
-};
-
+        try {
+            const response = await axios.post(`${BASE_API}/login`, {
+                email,
+                password
+            },
+            {
+              withCredentials: true, // penting agar cookie terkirim
+            });
+            const { accessToken, safeUserData } = response.data;
+            localStorage.setItem('token', accessToken);
+            setToken(accessToken);
+            setUser (safeUserData);
+            setIsAuthenticated(true);
+            navigate('/home');
+        } catch (error) {
+            console.error('Login failed:', error);
+            throw error;
+        }
+    };
 
     const register = async (name, email, password) => {
         try {
