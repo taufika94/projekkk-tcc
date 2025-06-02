@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import { BASE_API } from '../../utils';
 
 const AuthContext = createContext();
 
@@ -35,7 +36,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post('https://be-rest-928661779459.us-central1.run.app', {
+            const response = await axios.post(`${BASE_API}/login`, {
                 email,
                 password
             },
@@ -56,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (name, email, password) => {
         try {
-            await axios.post('http://localhost:5000/register', {
+            await axios.post(`${BASE_API}/register`, {
                 name,
                 email,
                 password
@@ -73,7 +74,7 @@ export const AuthProvider = ({ children }) => {
     console.log("click");
     
       try {
-          const response = await axios.delete('http://localhost:5000/logout', {
+          const response = await axios.delete(`${BASE_API}/logout`, {
               withCredentials: true
           });
           console.log(response);
