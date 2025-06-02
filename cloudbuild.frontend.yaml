@@ -29,7 +29,7 @@ steps:
         path: /root/.npm
 
   # Step 3: Deploy ke App Engine
-  - name: "gcr.io/cloud-builders/gcloud"
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: gcloud
     args: ["app", "deploy", "--quiet"]
     dir: "project-fe"
