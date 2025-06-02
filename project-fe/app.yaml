@@ -1,38 +1,18 @@
-steps:
-  # Step 1: Install dependencies
-  - name: "gcr.io/cloud-builders/npm"
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        if [ ! -d "node_modules" ]; then
-          echo "Installing dependencies..."
-          npm ci
-        else
-          echo "Skipping npm install, node_modules exists."
-        fi
-    dir: "notes_fe"
-    volumes:
-      - name: "npm-cache"
-        path: /root/.npm
+runtime: nodejs18 # Or nodejs20, or another suitable runtime if you're using a Node.js server to serve static files
+# If you're serving purely static files, you might consider the static-files handler:
+# See: https://cloud.google.com/appengine/docs/standard/nodejs/serving-static-files
 
-  # Step 2: Build frontend 
-  - name: "gcr.io/cloud-builders/npm"
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        npm run build
-    dir: "notes_fe"
-    volumes:
-      - name: "npm-cache"
-        path: /root/.npm
+handlers:
+# Serve all static files from the 'build' directory (or 'dist' depending on your build setup)
+- url: /(.*\.(gif|png|jpg|ico|css|js|html|map))$
+  static_files: build/\1
+  upload: build/(.*\.(gif|png|jpg|ico|css|js|html|map))$
 
-  # Step 3: Deploy ke App Engine
-  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    entrypoint: gcloud
-    args: ["app", "deploy", "--quiet"]
-    dir: "notes_fe"
-
-options:
-  logging: CLOUD_LOGGING_ONLY
+# For all other URLs, serve the index.html (for single-page applications)
+- url: /.*
+  static_files: build/index.html
+  upload: build/index.html
+  # If you need to handle routing within the client-side app:
+  # If you have a Node.js server that serves index.html and handles client-side routing,
+  # you might point this to a script instead:
+  # script: auto # Or your server script file, e.g., main.js
