@@ -1,0 +1,823 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+/* Reset dan dasar CSS yang Anda berikan */
+:root {
+    --font-family-primary: 'Orbitron', system-ui, Avenir, Helvetica, Arial, sans-serif;
+    --color-text-primary: rgba(255, 255, 255, 0.87);
+    --color-background-dark: #0A0A0A;
+    --color-background-medium: #1A1A1A;
+    --color-background-light: #242424;
+    --color-green-primary: #00FF00;
+    --color-green-dark: #00A000;
+    --color-green-hover: #007000;
+    --color-red-primary: #FF5733; /* Adjusted for better contrast */
+    --color-red-logout: #DC2626; /* Tailwind red-600 */
+    --color-red-logout-hover: #B91C1C; /* Tailwind red-700 */
+    --color-blue-primary: #646cff;
+    --color-blue-hover: #535bf2;
+    --color-gray-light: #C0C0C0;
+    --color-gray-medium: #909090;
+    --color-gray-dark: #555555;
+    --border-radius-base: 8px;
+    --transition-fast: all 0.25s ease;
+    --transition-medium: all 0.3s ease-in-out;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex; /* Changed to flex for centering */
+    justify-content: center;
+    align-items: center;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: var(--color-background-dark);
+    font-family: var(--font-family-primary);
+    color: var(--color-text-primary);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 2; /* Adjusted from 1.5 to 2 for better readability in general, can be overridden */
+    font-weight: 440;
+}
+
+a {
+    font-weight: 500;
+    color: var(--color-blue-primary);
+    text-decoration: inherit;
+}
+
+a:hover {
+    color: var(--color-blue-hover);
+}
+
+h1 {
+    font-size: 4cm; /* Keep this if it's intentional for specific h1s, otherwise adjust */
+    line-height: 1.5;
+}
+
+button {
+    border-radius: var(--border-radius-base);
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1.2em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: var(--color-background-medium);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+button:hover {
+    border-color: var(--color-blue-primary);
+}
+
+button:focus,
+button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* ----------- CUSTOM STYLES UNTUK TEMA SENJATA (Disesuaikan) ----------- */
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-background-dark);
+    padding: 1.5rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.login-card {
+    background-color: rgba(15, 15, 15, 0.95);
+    padding: 3rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(0, 255, 0, 0.15), 0 0 15px rgba(0, 255, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #282828;
+    transition: var(--transition-medium);
+}
+
+.login-card:hover {
+    transform: scale(1.01);
+}
+
+/* Efek Garis Scanning */
+.scan-line-top-left,
+.scan-line-top-right,
+.scan-line-bottom-left,
+.scan-line-bottom-right {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-color: var(--color-green-primary);
+    opacity: 0.5;
+    transition: var(--transition-medium);
+}
+
+.scan-line-top-left { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; }
+.scan-line-top-right { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; }
+.scan-line-bottom-left { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; }
+.scan-line-bottom-right { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; }
+
+.login-card:hover .scan-line-top-left,
+.login-card:hover .scan-line-top-right,
+.login-card:hover .scan-line-bottom-left,
+.login-card:hover .scan-line-bottom-right {
+    border-color: #39FF14;
+    opacity: 0.8;
+}
+
+.login-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    color: var(--color-red-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1.1;
+    text-shadow: 0 0 10px rgba(255, 87, 51, 0.4);
+}
+
+.login-subtitle {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--color-gray-light);
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.75rem;
+    opacity: 0.9;
+}
+
+.error-message {
+    margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.3rem;
+    background-color: #4B0000;
+    color: #FFD700;
+    border: 2px solid #8B0000;
+    font-weight: 600;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    animation: shake 0.5s ease-in-out;
+    font-size: 0.95rem;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.form-group {
+    margin-bottom: 2rem;
+}
+
+.form-group label {
+    display: block;
+    color: #B0B0B0;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.9rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.form-group input {
+    width: calc(100% - 28px);
+    padding: 15px 14px;
+    border: 2px solid #3A3A3A;
+    border-radius: 0.4rem;
+    background-color: #1A1A1A;
+    color: #E0E0E0;
+    font-size: 1.1rem;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: var(--transition-medium);
+}
+
+.form-group input::placeholder {
+    color: var(--color-gray-dark);
+    opacity: 0.9;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--color-green-primary);
+    box-shadow: 0 0 0 4px rgba(0, 255, 0, 0.4);
+}
+
+.login-button {
+    width: 100%;
+    background-color: var(--color-green-dark);
+    color: white;
+    font-weight: 700;
+    padding: 1.3rem 1.5rem;
+    border-radius: 0.4rem;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    transition: var(--transition-medium);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 160, 0, 0.3);
+}
+
+.login-button:hover {
+    background-color: var(--color-green-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 160, 0, 0.4);
+}
+
+.login-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 160, 0, 0.2);
+}
+
+.button-text {
+    position: relative;
+    z-index: 1;
+}
+
+/* Efek kilat pada tombol */
+.button-flash-effect {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: skewX(-25deg);
+    animation: flash 1.5s infinite ease-out;
+    animation-delay: 0.5s;
+}
+
+@keyframes flash {
+    0% { left: -100%; }
+    20% { left: 150%; }
+    100% { left: 150%; }
+}
+
+.register-text {
+    margin-top: 3rem;
+    text-align: center;
+    color: var(--color-gray-medium);
+    font-size: 0.95rem;
+}
+
+.register-link {
+    color: var(--color-green-primary);
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out, text-shadow 0.2s ease-in-out;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.2);
+}
+
+.register-link:hover {
+    color: #39FF14;
+    text-decoration: underline;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+}
+
+.home-container {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #1A1A1A 0%, #0A0A0A 100%);
+    color: #E0E0E0;
+    font-family: var(--font-family-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 4px; /* Adjusted padding */
+}
+
+.home-header {
+    background-color: rgba(26, 26, 26, 0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 255, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%; /* Ensure header takes full width */
+    padding: 1rem 2rem; /* Added padding to header */
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.home-nav-link {
+    color: #888;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    transition: var(--transition-fast);
+}
+
+.home-nav-link:hover {
+    color: var(--color-green-primary);
+    background-color: rgba(0, 255, 0, 0.1);
+}
+
+.home-content-card {
+    background-color: rgba(15, 15, 15, 0.9);
+    padding: 3rem;
+    border-radius: 1rem;
+    box-shadow: 0 15px 30px rgba(0, 255, 0, 0.15), 0 0 20px rgba(0, 255, 0, 0.1);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    margin-top: 2rem;
+    transition: var(--transition-medium);
+    width: 100%;
+    max-width: 4xl; /* Use max-w for responsiveness */
+}
+
+.home-content-card:hover {
+    transform: translateY(-5px);
+}
+
+.home-info-card,
+.home-actions-card {
+    background-color: rgba(25, 25, 25, 0.9);
+    padding: 2.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 5px 15px rgba(0, 255, 0, 0.1), inset 0 0 10px rgba(0, 255, 0, 0.05);
+    border: 1px solid rgba(0, 255, 0, 0.2);
+    transition: var(--transition-medium);
+}
+
+.home-info-card:hover,
+.home-actions-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 255, 0, 0.2), inset 0 0 15px rgba(0, 255, 0, 0.1);
+}
+
+.home-action-button {
+    display: block;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-align: center;
+    color: white;
+    transition: var(--transition-medium);
+    border: 2px solid transparent;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.home-action-button.bg-blue-600:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4);
+}
+.home-action-button.bg-green-600:hover {
+    background-color: #28a745;
+    border-color: #28a745;
+    box-shadow: 0 6px 15px rgba(40, 167, 69, 0.4);
+}
+.home-action-button.bg-purple-600:hover {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+    box-shadow: 0 6px 15px rgba(111, 66, 193, 0.4);
+}
+
+/* Ensure Orbitron font is applied where needed using Tailwind */
+.font-orbitron {
+    font-family: var(--font-family-primary);
+}
+
+/* styles.css atau App.css */
+nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%; /* Ensure navbar takes full width */
+}
+
+/* Animasi untuk tombol back */
+.back-button:hover svg {
+    transform: translateX(-3px); /* More noticeable movement */
+    transition: transform 0.2s ease;
+}
+
+/* Responsive text */
+@media (max-width: 640px) {
+    .navbar-title {
+        font-size: 1rem;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .home-content-card {
+        padding: 2rem;
+    }
+    .home-info-card,
+    .home-actions-card {
+        padding: 1.5rem;
+    }
+    .home-header h1 {
+        font-size: 2.5rem; /* Adjusted for medium screens */
+    }
+}
+
+@media (max-width: 640px) {
+    .home-header {
+        padding: 0.5rem 1rem;
+    }
+    .home-header h1 {
+        font-size: 2rem; /* Further adjusted for small screens */
+    }
+    .home-header nav {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+    .home-nav-link {
+        padding: 0.25rem 0.5rem;
+    }
+    .home-content-card {
+        padding: 1.5rem;
+    }
+    .home-info-card,
+    .home-actions-card {
+        padding: 1rem;
+    }
+    .home-info-card p {
+        font-size: 0.9rem;
+    }
+    .home-action-button {
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Enhanced UI with better structure and UX principles */
+:root {
+    --primary: #00ff88;
+    --primary-dark: #00b362;
+    --secondary: #ff5733;
+    --dark-1: #0a0a0a;
+    --dark-2: #121212;
+    --dark-3: #1a1a1a;
+    --light-1: #ffffff;
+    --light-2: #e0e0e0;
+    --light-3: #c0c0c0;
+    --error: #ff5555;
+    --warning: #ffaa00;
+    --success: #00ff88;
+    --border-radius: 8px;
+    --transition: all 0.3s ease;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Orbitron', sans-serif;
+    background-color: var(--dark-1);
+    color: var(--light-1);
+    line-height: 1.6;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+/* Layout */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Cards */
+.card {
+    background: var(--dark-2);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 255, 136, 0.1);
+    transition: var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    border-color: rgba(0, 255, 136, 0.3);
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--light-3);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--dark-3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    color: var(--light-1);
+    font-family: inherit;
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.2);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--dark-1);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: var(--secondary);
+    color: var(--light-1);
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+/* Navigation */
+.navbar {
+    background: var(--dark-2);
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+/* Tables */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--dark-2);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.table th,
+.table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.table th {
+    background: var(--dark-3);
+    color: var(--primary);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.table tr:hover {
+    background: rgba(0, 255, 136, 0.05);
+}
+
+/* Alerts */
+.alert {
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+}
+
+.alert-error {
+    background: rgba(255, 85, 85, 0.1);
+    border: 1px solid var(--error);
+    color: var(--error);
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+/* Login/Signup Specific */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-title {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    color: var(--light-3);
+    font-size: 0.9rem;
+}
+
+/* Scan Lines Effect */
+.scan-line {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-color: var(--primary);
+    opacity: 0.5;
+    transition: var(--transition);
+}
+
+.scan-line-top-left { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; }
+.scan-line-top-right { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; }
+.scan-line-bottom-left { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; }
+.scan-line-bottom-right { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; }
+
+.auth-card:hover .scan-line {
+    opacity: 0.8;
+    border-color: var(--primary-dark);
+}
+
+/* Button Flash Effect */
+.btn-flash {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-flash::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    transform: skewX(-25deg);
+    animation: flash 2s infinite;
+}
+
+@keyframes flash {
+    0% { left: -100%; }
+    20% { left: 150%; }
+    100% { left: 150%; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .card {
+        padding: 1.5rem;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 1rem;
+    }
+    
+    .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Specific Navbar Adjustments */
+.navbar-logout-btn {
+    padding: 0.5rem 1rem; /* Smaller padding */
+    font-size: 0.9rem; /* Smaller font size */
+    border-radius: 0.375rem; /* Match other rounded elements */
+    display: inline-flex; /* Keep flex for icon alignment */
+    align-items: center;
+    gap: 0.5rem; /* Space between text and icon */
+    background-color: var(--color-red-logout);
+    color: white;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.navbar-logout-btn:hover {
+    background-color: var(--color-red-logout-hover);
+    transform: translateY(-1px);
+}
+
+.navbar-back-btn {
+    background: none; /* No background */
+    border: none; /* No border */
+    color: var(--color-green-primary); /* Changed to green for default */
+    padding: 0.5rem; /* Adequate padding for click area */
+    font-size: 1.5rem; /* Icon size */
+    transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.navbar-back-btn:hover {
+    color: var(--primary-dark); /* Darker green on hover */
+    transform: translateX(-5px); /* Move left on hover for back effect */
+}

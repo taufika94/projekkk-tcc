@@ -1,0 +1,275 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+/* Reset dan dasar CSS yang Anda berikan */
+:root {
+  font-family: 'Orbitron', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #0A0A0A; /* Latar belakang sangat gelap */
+  font-family: 'Orbitron', sans-serif;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff; /* Akan di-override oleh kelas kustom */
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2; /* Akan di-override oleh kelas kustom */
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+
+/* ----------- CUSTOM STYLES UNTUK TEMA SENJATA (Disesuaikan) ----------- */
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0A0A0A; /* Warna latar belakang pekat */
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.login-card {
+  background-color: rgba(15, 15, 15, 0.95);
+  padding: 3rem; /* Perbesar padding agar ada ruang */
+  border-radius: 0.75rem; /* Sudut lebih membulat */
+  box-shadow: 0 10px 25px rgba(0, 255, 0, 0.15), 0 0 15px rgba(0, 255, 0, 0.1);
+  width: 100%;
+  max-width: 450px; /* Lebar maksimal sedikit lebih besar */
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #282828;
+  transition: transform 0.3s ease-in-out;
+}
+
+.login-card:hover {
+  transform: scale(1.01);
+}
+
+/* Efek Garis Scanning */
+.scan-line-top-left,
+.scan-line-top-right,
+.scan-line-bottom-left,
+.scan-line-bottom-right {
+  position: absolute;
+  width: 30px; /* Ukuran garis sedikit lebih besar */
+  height: 30px;
+  border-color: #00FF00;
+  opacity: 0.5;
+  transition: border-color 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+.scan-line-top-left { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; }
+.scan-line-top-right { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; }
+.scan-line-bottom-left { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; }
+.scan-line-bottom-right { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; }
+
+.login-card:hover .scan-line-top-left,
+.login-card:hover .scan-line-top-right,
+.login-card:hover .scan-line-bottom-left,
+.login-card:hover .scan-line-bottom-right {
+  border-color: #39FF14;
+  opacity: 0.8;
+}
+
+
+.login-title {
+  font-size: 2.8rem; /* Ukuran font lebih kecil sedikit, lebih proporsional */
+  font-weight: 700; /* Sedikit kurang tebal, lebih mudah dibaca */
+  margin-bottom: 2.5rem; /* Jarak bawah lebih lega */
+  text-align: center;
+  color: #FF5733; /* Merah oranye yang lebih cerah, kontras lebih baik */
+  text-transform: uppercase;
+  letter-spacing: 0.1em; /* Jarak huruf lebih sedang */
+  line-height: 1.1;
+  text-shadow: 0 0 10px rgba(255, 87, 51, 0.4); /* Tambah shadow untuk kedalaman */
+}
+
+.login-subtitle {
+  display: block;
+  font-size: 1.1rem; /* Ukuran sub-judul lebih kecil */
+  color: #C0C0C0; /* Abu-abu lebih terang */
+  font-weight: 500; /* Sedikit lebih tebal dari sebelumnya */
+  text-transform: none;
+  letter-spacing: 0.04em; /* Jarak huruf lebih rapat */
+  margin-bottom: 0.75rem; /* Jarak bawah sedikit lebih besar */
+  opacity: 0.9; /* Sedikit lebih solid */
+}
+
+.error-message {
+  margin-bottom: 2rem; /* Jarak bawah lebih lega */
+  padding: 1rem 1.25rem; /* Padding horizontal lebih besar */
+  border-radius: 0.3rem;
+  background-color: #4B0000;
+  color: #FFD700; /* Kuning keemasan */
+  border: 2px solid #8B0000;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem; /* Jarak antara ikon dan teks */
+  animation: shake 0.5s ease-in-out;
+  font-size: 0.95rem; /* Ukuran font pesan error */
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+
+.form-group {
+  margin-bottom: 2rem; /* Jarak antar form group lebih besar */
+}
+
+.form-group label {
+  display: block;
+  color: #B0B0B0; /* Abu-abu terang untuk label */
+  font-size: 1rem; /* Ukuran label lebih besar */
+  font-weight: 600; /* Lebih tebal */
+  margin-bottom: 0.9rem; /* Jarak antara label dan input lebih besar */
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.form-group input {
+  width: calc(100% - 28px);
+  padding: 15px 14px; /* Padding lebih besar untuk input field */
+  border: 2px solid #3A3A3A;
+  border-radius: 0.4rem; /* Sudut input lebih membulat */
+  background-color: #1A1A1A; /* Warna latar belakang input yang lebih gelap */
+  color: #E0E0E0;
+  font-size: 1.1rem; /* Ukuran font input lebih besar */
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.form-group input::placeholder {
+  color: #555555; /* Placeholder lebih gelap */
+  opacity: 0.9; /* Placeholder lebih solid */
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #00FF00;
+  box-shadow: 0 0 0 4px rgba(0, 255, 0, 0.4);
+}
+
+.login-button {
+  width: 100%;
+  background-color: #00A000; /* Hijau yang lebih cerah dan menarik */
+  color: white;
+  font-weight: 700;
+  padding: 1.3rem 1.5rem; /* Padding tombol lebih besar */
+  border-radius: 0.4rem; /* Sudut tombol lebih membulat */
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem; /* Ukuran font tombol lebih besar */
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 160, 0, 0.3); /* Shadow hijau yang disesuaikan */
+}
+
+.login-button:hover {
+  background-color: #007000; /* Hijau lebih gelap saat hover */
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 160, 0, 0.4);
+}
+
+.login-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 160, 0, 0.2);
+}
+
+.button-text {
+  position: relative;
+  z-index: 1;
+}
+
+/* Efek kilat pada tombol */
+.button-flash-effect {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 40%; /* Lebar kilat lebih proporsional */
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: skewX(-25deg);
+  animation: flash 1.5s infinite ease-out;
+  animation-delay: 0.5s;
+}
+
+@keyframes flash {
+  0% { left: -100%; }
+  20% { left: 150%; }
+  100% { left: 150%; }
+}
+
+.register-text {
+  margin-top: 3rem; /* Jarak atas lebih lega */
+  text-align: center;
+  color: #909090; /* Abu-abu teks info lebih terang */
+  font-size: 0.95rem; /* Ukuran font sedikit lebih besar */
+}
+
+.register-link {
+  color: #00FF00;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out, text-shadow 0.2s ease-in-out;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.2);
+}
+
+.register-link:hover {
+  color: #39FF14;
+  text-decoration: underline;
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+}
