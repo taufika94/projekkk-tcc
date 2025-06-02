@@ -37,7 +37,7 @@ const UserForm = () => {
     } else {
       await api.post('/users/add', form);
     }
-    navigate('/users');
+    navigate('/home');
   };
 
   return (
