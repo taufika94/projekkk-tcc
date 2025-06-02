@@ -1,24 +1,21 @@
-import express from "express";
-import cors from "cors";
-import UserRoute from "./routes/UserRoute.js";
-import WeaponRoute from "./routes/WeaponRoute.js";
-import TransactionRoute from "./routes/TransactionRoute.js";
-import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
-
+import express from 'express';
+import path from 'path';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
 const app = express();
-app.set("view engine", "ejs");
 
-app.use(cookieParser());
-app.use(cors({ credentials:true,origin:[
-  'http://localhost:5174'
-]
- }));
-app.use(express.json());
-app.get("/", (req, res) => res.render("index"));
-app.use(UserRoute, WeaponRoute, TransactionRoute);
+// Set view engine
+app.set('view engine', 'ejs'); // Mengatur EJS sebagai engine template
+app.set('views', path.join(__dirname, 'views')); // Mengatur direktori views
 
-app.listen(5000, () => console.log("Server connected"));
+app.get("/", (req, res) => {
+  res.render("index"); // Pastikan file index.ejs ada di dalam folder views
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
