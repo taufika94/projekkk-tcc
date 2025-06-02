@@ -15,7 +15,7 @@ app.set("view engine", "");
 app.use(cookieParser());
 app.use(cors({ credentials:true,origin:[
   'http://localhost:5174',
-  'https://c-05-451109.ue.r.appspot.com'
+  'https://projek-dot-c-05-451109.ue.r.appspot.com'
 ]
  }));
 app.use(express.json());
