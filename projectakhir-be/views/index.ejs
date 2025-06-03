@@ -1,24 +1,201 @@
-import express from "express";
-import cors from "cors";
-import UserRoute from "./routes/UserRoute.js";
-import WeaponRoute from "./routes/WeaponRoute.js";
-import TransactionRoute from "./routes/TransactionRoute.js";
-import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Documentation</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
+    h1 { color: #333; }
+    h2 { color: #007acc; }
+    code, pre { background-color: #eee; padding: 10px; display: block; white-space: pre-wrap; }
+    .endpoint { margin-bottom: 30px; }
+    hr { margin: 40px 0; }
+  </style>
+</head>
+<body>
+  <h1>📘 API Documentation</h1>
+  <p><strong>Base URL:</strong> <code>https://be-rest-928661779459.us-central1.run.app</code></p>
+  <hr>
 
+  <h2>🧑 User API</h2>
 
-dotenv.config();
+  <div class="endpoint">
+    <h3>📥 Get All Users</h3>
+    <code>GET /users</code>
+    <p>Returns a list of all users.</p>
+    <pre>[
+  {
+    "id": "1",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "admin"
+  },
+  ...
+]</pre>
+  </div>
 
-const app = express();
-app.set("view engine", "ejs");
+  <div class="endpoint">
+    <h3>📥 Get User by ID</h3>
+    <code>GET /users/:id</code>
+    <p>Returns a single user by ID.</p>
+  </div>
 
-app.use(cookieParser());
-app.use(cors({ credentials:true,origin:[
-  'https://projek-dot-c-05-451109.ue.r.appspot.com'
-]
- }));
-app.use(express.json());
-app.get("/", (req, res) => res.render("index"));
-app.use(UserRoute, WeaponRoute, TransactionRoute);
+  <div class="endpoint">
+    <h3>🗑️ Delete User by ID</h3>
+    <code>DELETE /delete-users/:id</code>
+    <p>Deletes a user based on ID.</p>
+  </div>
 
-app.listen(5000, () => console.log("Server connected"));
+  <div class="endpoint">
+    <h3>✏️ Update User</h3>
+    <code>PUT /update-users/:id</code>
+    <p>Updates an existing user.</p>
+    <pre>{
+  "name": "New Name",
+  "email": "new@example.com",
+  "password": "hashed_password",
+  "role": "user"
+}</pre>
+  </div>
+
+  <div class="endpoint">
+    <h3>➕ Add New User</h3>
+    <code>POST /add-users</code>
+    <pre>{
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "password": "123456",
+  "role": "user"
+}</pre>
+  </div>
+
+  <hr>
+
+  <h2>🔫 Weapons API</h2>
+
+  <div class="endpoint">
+    <h3>📥 Get All Weapons</h3>
+    <code>GET /weapons</code>
+    <p>Returns list of all weapons.</p>
+    <pre>[
+  {
+    "name": "M16",
+    "type": "Rifle",
+    "serialNum": "SN12345",
+    "condition": "Good",
+    "location": "Warehouse A",
+    "stok": 20
+  }
+]</pre>
+  </div>
+
+  <div class="endpoint">
+    <h3>📥 Get Weapon by ID</h3>
+    <code>GET /weapons/:id</code>
+  </div>
+
+  <div class="endpoint">
+    <h3>🗑️ Delete Weapon</h3>
+    <code>DELETE /delete-weapons/:id</code>
+  </div>
+
+  <div class="endpoint">
+    <h3>✏️ Update Weapon</h3>
+    <code>PUT /update-weapons/:id</code>
+    <pre>{
+  "name": "Updated Weapon",
+  "type": "Sniper",
+  "serialNum": "SN98765",
+  "condition": "Excellent",
+  "location": "Armory B",
+  "stok": 5
+}</pre>
+  </div>
+
+  <div class="endpoint">
+    <h3>➕ Add Weapon</h3>
+    <code>POST /add-weapons</code>
+    <pre>{
+  "name": "AK-47",
+  "type": "Rifle",
+  "serialNum": "SN54321",
+  "condition": "New",
+  "location": "Depot C",
+  "stok": 10
+}</pre>
+  </div>
+
+  <hr>
+
+  <h2>📦 Transaction API</h2>
+
+  <div class="endpoint">
+    <h3>📥 Get Transactions by User</h3>
+    <code>GET /transactions/:userId</code>
+    <p>Returns transactions related to a user.</p>
+    <pre>[
+  {
+    "type_transaction": "borrow",
+    "amount": 1,
+    "information": "Training use",
+    "status": "approved",
+    "userId": "1",
+    "weaponId": "3"
+  }
+]</pre>
+  </div>
+
+  <div class="endpoint">
+    <h3>🗑️ Delete Transaction</h3>
+    <code>DELETE /delete-transactions</code>
+    <p>Delete a transaction by ID in body.</p>
+    <pre>{
+  "transactionId": "123"
+}</pre>
+  </div>
+
+  <div class="endpoint">
+    <h3>✏️ Update Transaction</h3>
+    <code>PUT /update-transaction</code>
+    <pre>{
+  "transactionId": "123",
+  "type_transaction": "return",
+  "amount": 1,
+  "information": "Returned",
+  "status": "done",
+  "userId": "1",
+  "weaponId": "3"
+}</pre>
+  </div>
+
+  <div class="endpoint">
+    <h3>➕ Add New Transaction</h3>
+    <code>POST /transactions</code>
+    <p>Create a new transaction.</p>
+    <pre>{
+  "type_transaction": "borrow",
+  "amount": 2,
+  "information": "Patrol duty",
+  "status": "pending",
+  "userId": "1",
+  "weaponId": "3"
+}</pre>
+  </div>
+
+  <hr>
+
+  <h2>✅ Response Format</h2>
+  <pre>{
+  "status": "success",
+  "message": "Operation completed successfully",
+  "data": { ... }
+}</pre>
+
+  <h2>❌ Error Format</h2>
+  <pre>{
+  "status": "error",
+  "message": "Something went wrong",
+  "error": "Detailed error message"
+}</pre>
+</body>
+</html>
