@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import jwtDecode from 'jwt-decode';
+import * as jwtDecode from 'jwt-decode';
 import PropTypes from 'prop-types';
 
 const BASE_URL = 'https://be-rest-928661779459.us-central1.run.app';
