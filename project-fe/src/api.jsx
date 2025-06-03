@@ -129,7 +129,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
     try {
-        const response = await axios.post(`${BASE_API}/login`, { // Menggunakan BASE_API
+        const response = await axios.post(`${BASE_URL}/login`, { // Menggunakan BASE_API
             email,
             password
         }, {
@@ -148,7 +148,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (name, email, password) => {
     try {
-        await axios.post(`${BASE_API}/register`, { // Menggunakan BASE_API
+        await axios.post(`${BASE_URL}/register`, { // Menggunakan BASE_API
             name,
             email,
             password
@@ -162,7 +162,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await axios.delete(`${BASE_API}/logout`, {
+            await axios.delete(`${BASE_URL}/logout`, {
                 withCredentials: true
             });
             Cookies.remove('token'); // Hapus token dari cookies
