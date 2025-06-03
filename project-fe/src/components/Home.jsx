@@ -1,6 +1,6 @@
 import { useAuth } from "../api";
 import { Link } from "react-router-dom";
-
+import axios from 'axios';
 const Home = () => {
     const { user } = useAuth();
 

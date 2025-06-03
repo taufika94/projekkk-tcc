@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../api';
-
+import axios from 'axios';
 const Navbar = () => {
     const { logout, user } = useAuth();
     const navigate = useNavigate();

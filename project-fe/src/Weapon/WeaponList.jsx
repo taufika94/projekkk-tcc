@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../api';
 import { Link, useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 const WeaponList = () => {
   const { api, logout, user } = useAuth(); // Ambil user
   const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../api';
-
+import axios from 'axios';
 const WeaponForm = () => {
   const { api } = useAuth();
   const { id } = useParams();

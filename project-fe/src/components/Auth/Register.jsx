@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../api';
 import { Link, useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

@@ -10,6 +10,7 @@ import TransactionList from './Transaction/TransactionList';
 import TransactionForm from './Transaction/TransactionForm';
 import UserList from './User/UserList';
 import UserForm from './User/UserForm';
+import axios from 'axios';
 
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
