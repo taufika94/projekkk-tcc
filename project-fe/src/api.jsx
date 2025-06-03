@@ -90,19 +90,19 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const res = await api.post('/login', { email, password });
-      setAccessToken(res.data.accessToken);
-
-      // Set access token in cookie (1 day)
-      document.cookie = `accessToken=${res.data.accessToken}; path=/; secure; sameSite=Strict; max-age=${60 * 60 * 24}`;
       
-      // Set refresh token in cookie (5 days)
-      document.cookie = `refreshToken=${res.data.refreshToken}; path=/; secure; sameSite=Strict; max-age=${60 * 60 * 24 * 5}`;
-
+      // Sesuai dengan response dari backend
+      const { accessToken, safeUserData } = res.data;
+      
+      setAccessToken(accessToken);
+      setUser(safeUserData);
+      document.cookie = `accessToken=${accessToken}; path=/; secure; sameSite=Strict; max-age=30`;
+      
       navigate('/home');
-      return true;
+      return { success: true, user: safeUserData };
     } catch (err) {
       console.error('Login failed:', err);
-      return false;
+      return { success: false, error: err.response?.data?.message || 'Login failed' };
     }
   };
 
