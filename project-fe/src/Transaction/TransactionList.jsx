@@ -145,6 +145,12 @@ const TransactionList = () => {
                         {trx.status}
                       </span>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        {trx.weapon ? trx.weapon.name : 'N/A'} {/* Access weapon.name */}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        {trx.user ? trx.user.name : 'N/A'} {/* Access user.name */}
+                    </td>
                     {canModify() && (
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                         <Link
