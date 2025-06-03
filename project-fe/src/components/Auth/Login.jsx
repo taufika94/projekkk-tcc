@@ -1,6 +1,6 @@
 // Improved Login Component
 import { useState } from 'react';
-import { useAuth } from '../../api';
+import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 

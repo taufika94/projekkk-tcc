@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../api';
+import { useAuth } from '../contexts/AuthContext';
 
 const UserList = () => {
   const { api } = useAuth();
