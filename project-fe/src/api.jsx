@@ -135,9 +135,9 @@ export const AuthProvider = ({ children }) => {
             }, {
                 withCredentials: true,
             });
-            const { accessToken, safeUser Data } = response.data;
+            const { accessToken, safeUserData } = response.data;
             Cookies.set('token', accessToken, { expires: 1 });
-            setUser  (safeUser Data);
+            setUser  (safeUserData);
             setIsAuthenticated(true);
             navigate('/home');
         } catch (error) {
