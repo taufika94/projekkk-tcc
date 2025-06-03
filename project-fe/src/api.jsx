@@ -5,7 +5,7 @@ import * as jwtDecode from 'jwt-decode';
 import PropTypes from 'prop-types';
 import Cookies from 'js-cookie';
 
-const BASE_API = 'https://be-rest-928661779459.us-central1.run.app';
+const BASE_API = 'https://be-rest-928661779459.us-central1.run.app'; // Mendefinisikan BASE_API
 
 const api = axios.create({
   baseURL: BASE_API,
@@ -106,7 +106,7 @@ export default api;
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser ] = useState(null);
+    const [user, setUser  ] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
 
@@ -120,7 +120,7 @@ export const AuthProvider = ({ children }) => {
             // Cek apakah token masih valid
             if (decodedToken.exp > currentTime) {
                 setIsAuthenticated(true);
-                setUser (decodedToken); // Simpan data pengguna dari token
+                setUser  (decodedToken); // Simpan data pengguna dari token
             } else {
                 Cookies.remove('token'); // Hapus token jika sudah kedaluwarsa
             }
@@ -128,37 +128,37 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-    try {
-        const response = await axios.post(`${BASE_API}/login`, { // Menggunakan BASE_API
-            email,
-            password
-        }, {
-            withCredentials: true,
-        });
-        const { accessToken, safeUserData } = response.data;
-        Cookies.set('token', accessToken, { expires: 1 });
-        setUser (safeUserData);
-        setIsAuthenticated(true);
-        navigate('/home');
-    } catch (error) {
-        console.error('Login failed:', error);
-        throw error;
-    }
-};
+        try {
+            const response = await axios.post(`${BASE_API}/login`, {
+                email,
+                password
+            }, {
+                withCredentials: true,
+            });
+            const { accessToken, safeUser Data } = response.data;
+            Cookies.set('token', accessToken, { expires: 1 });
+            setUser  (safeUser Data);
+            setIsAuthenticated(true);
+            navigate('/home');
+        } catch (error) {
+            console.error('Login failed:', error);
+            throw error;
+        }
+    };
 
     const register = async (name, email, password) => {
-    try {
-        await axios.post(`${BASE_API}/register`, { // Menggunakan BASE_API
-            name,
-            email,
-            password
-        });
-        navigate('/login');
-    } catch (error) {
-        console.error('Registration failed:', error);
-        throw error;
-    }
-};
+        try {
+            await axios.post(`${BASE_API}/register`, {
+                name,
+                email,
+                password
+            });
+            navigate('/login');
+        } catch (error) {
+            console.error('Registration failed:', error);
+            throw error;
+        }
+    };
 
     const logout = async () => {
         try {
@@ -166,7 +166,7 @@ export const AuthProvider = ({ children }) => {
                 withCredentials: true
             });
             Cookies.remove('token'); // Hapus token dari cookies
-            setUser (null);
+            setUser  (null);
             setIsAuthenticated(false);
             navigate('/login');
         } catch (error) {
