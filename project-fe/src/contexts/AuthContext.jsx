@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie'; // Import the cookie library
+// Import the cookie library
 
 const AuthContext = createContext();
 
@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
     // Check if user is authenticated on initial load
     useEffect(() => {
         const verifyToken = async () => {
-            const token = Cookies.get('token'); // Get token from cookies
+            /// Get token from cookies
             if (token) {
                 try {
                     const response = await axios.get('https://be-rest-928661779459.us-central1.run.app0/users', {
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
                 password
             });
             const { accessToken, safeUserData } = response.data;
-            Cookies.set('token', accessToken, { expires: 1 }); // Set token in cookies
+         
             setUser (safeUserData);
             setIsAuthenticated(true);
             navigate('/home');
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
             await axios.delete('https://be-rest-928661779459.us-central1.run.app/logout', {
                 withCredentials: true // Ensure cookies are sent
             });
-            Cookies.remove('token'); // Remove token from cookies
+            // Remove token from cookies
             setUser (null);
             setIsAuthenticated(false);
             navigate('/login');
