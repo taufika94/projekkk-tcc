@@ -5,10 +5,10 @@ import * as jwtDecode from 'jwt-decode';
 import PropTypes from 'prop-types';
 import Cookies from 'js-cookie';
 
-const BASE_URL = 'https://be-rest-928661779459.us-central1.run.app';
+const BASE_API = 'https://be-rest-928661779459.us-central1.run.app';
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: BASE_API,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
@@ -42,7 +42,7 @@ api.interceptors.request.use(async (config) => {
       // Jika token akan expired dalam 15 detik
       if (decoded.exp < currentTime + 15) {
         try {
-          const response = await axios.get(`${BASE_URL}/token`, { 
+          const response = await axios.get(`${BASE_API}/token`, { 
             withCredentials: true 
           });
           const newToken = response.data.accessToken;
@@ -78,7 +78,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       
       try {
-        const response = await axios.get(`${BASE_URL}/token`, { 
+        const response = await axios.get(`${BASE_API}/token`, { 
           withCredentials: true 
         });
         const newToken = response.data.accessToken;
@@ -129,7 +129,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
     try {
-        const response = await axios.post(`${BASE_URL}/login`, { // Menggunakan BASE_API
+        const response = await axios.post(`${BASE_API}/login`, { // Menggunakan BASE_API
             email,
             password
         }, {
@@ -148,7 +148,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (name, email, password) => {
     try {
-        await axios.post(`${BASE_URL}/register`, { // Menggunakan BASE_API
+        await axios.post(`${BASE_API}/register`, { // Menggunakan BASE_API
             name,
             email,
             password
@@ -162,7 +162,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await axios.delete(`${BASE_URL}/logout`, {
+            await axios.delete(`${BASE_API}/logout`, {
                 withCredentials: true
             });
             Cookies.remove('token'); // Hapus token dari cookies

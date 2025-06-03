@@ -1,1 +1,1 @@
-export const  BASE_URL = "https://be-rest-928661779459.us-central1.run.app"
+export const  BASE_API = "https://be-rest-928661779459.us-central1.run.app"
