@@ -14,9 +14,7 @@
 </head>
 <body>
   <h1>📘 API Documentation</h1>
-
   <p><strong>Base URL:</strong> <code>https://be-rest-928661779459.us-central1.run.app</code></p>
-
   <hr>
 
   <h2>🧑 User API</h2>
@@ -24,33 +22,39 @@
   <div class="endpoint">
     <h3>📥 Get All Users</h3>
     <code>GET /users</code>
-    <pre>{
-  "id": "",
-  "name": "",
-  "email": "",
-  "password": "",
-  "role": ""
-}</pre>
+    <p>Returns a list of all users.</p>
+    <pre>[
+  {
+    "id": "1",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "admin"
+  },
+  ...
+]</pre>
   </div>
 
   <div class="endpoint">
     <h3>📥 Get User by ID</h3>
     <code>GET /users/:id</code>
+    <p>Returns a single user by ID.</p>
   </div>
 
   <div class="endpoint">
     <h3>🗑️ Delete User by ID</h3>
     <code>DELETE /delete-users/:id</code>
+    <p>Deletes a user based on ID.</p>
   </div>
 
   <div class="endpoint">
     <h3>✏️ Update User</h3>
     <code>PUT /update-users/:id</code>
+    <p>Updates an existing user.</p>
     <pre>{
-  "name": "",
-  "email": "",
-  "password": "",
-  "role": ""
+  "name": "New Name",
+  "email": "new@example.com",
+  "password": "hashed_password",
+  "role": "user"
 }</pre>
   </div>
 
@@ -58,10 +62,10 @@
     <h3>➕ Add New User</h3>
     <code>POST /add-users</code>
     <pre>{
-  "name": "",
-  "email": "",
-  "password": "",
-  "role": ""
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "password": "123456",
+  "role": "user"
 }</pre>
   </div>
 
@@ -72,14 +76,17 @@
   <div class="endpoint">
     <h3>📥 Get All Weapons</h3>
     <code>GET /weapons</code>
-    <pre>{
-  "name": "",
-  "type": "",
-  "serialNum": "",
-  "condition": "",
-  "location": "",
-  "stok": ""
-}</pre>
+    <p>Returns list of all weapons.</p>
+    <pre>[
+  {
+    "name": "M16",
+    "type": "Rifle",
+    "serialNum": "SN12345",
+    "condition": "Good",
+    "location": "Warehouse A",
+    "stok": 20
+  }
+]</pre>
   </div>
 
   <div class="endpoint">
@@ -96,12 +103,12 @@
     <h3>✏️ Update Weapon</h3>
     <code>PUT /update-weapons/:id</code>
     <pre>{
-  "name": "",
-  "type": "",
-  "serialNum": "",
-  "condition": "",
-  "location": "",
-  "stok": ""
+  "name": "Updated Weapon",
+  "type": "Sniper",
+  "serialNum": "SN98765",
+  "condition": "Excellent",
+  "location": "Armory B",
+  "stok": 5
 }</pre>
   </div>
 
@@ -109,12 +116,12 @@
     <h3>➕ Add Weapon</h3>
     <code>POST /add-weapons</code>
     <pre>{
-  "name": "",
-  "type": "",
-  "serialNum": "",
-  "condition": "",
-  "location": "",
-  "stok": ""
+  "name": "AK-47",
+  "type": "Rifle",
+  "serialNum": "SN54321",
+  "condition": "New",
+  "location": "Depot C",
+  "stok": 10
 }</pre>
   </div>
 
@@ -125,21 +132,25 @@
   <div class="endpoint">
     <h3>📥 Get Transactions by User</h3>
     <code>GET /transactions/:userId</code>
-    <pre>{
-  "type_transaction": "",
-  "amount": "",
-  "information": "",
-  "status": "",
-  "userId": "",
-  "weaponId": ""
-}</pre>
+    <p>Returns transactions related to a user.</p>
+    <pre>[
+  {
+    "type_transaction": "borrow",
+    "amount": 1,
+    "information": "Training use",
+    "status": "approved",
+    "userId": "1",
+    "weaponId": "3"
+  }
+]</pre>
   </div>
 
   <div class="endpoint">
     <h3>🗑️ Delete Transaction</h3>
     <code>DELETE /delete-transactions</code>
+    <p>Delete a transaction by ID in body.</p>
     <pre>{
-  "transactionId": ""
+  "transactionId": "123"
 }</pre>
   </div>
 
@@ -147,14 +158,44 @@
     <h3>✏️ Update Transaction</h3>
     <code>PUT /update-transaction</code>
     <pre>{
-  "type_transaction": "",
-  "amount": "",
-  "information": "",
-  "status": "",
-  "userId": "",
-  "weaponId": ""
+  "transactionId": "123",
+  "type_transaction": "return",
+  "amount": 1,
+  "information": "Returned",
+  "status": "done",
+  "userId": "1",
+  "weaponId": "3"
 }</pre>
   </div>
 
+  <div class="endpoint">
+    <h3>➕ Add New Transaction</h3>
+    <code>POST /transactions</code>
+    <p>Create a new transaction.</p>
+    <pre>{
+  "type_transaction": "borrow",
+  "amount": 2,
+  "information": "Patrol duty",
+  "status": "pending",
+  "userId": "1",
+  "weaponId": "3"
+}</pre>
+  </div>
+
+  <hr>
+
+  <h2>✅ Response Format</h2>
+  <pre>{
+  "status": "success",
+  "message": "Operation completed successfully",
+  "data": { ... }
+}</pre>
+
+  <h2>❌ Error Format</h2>
+  <pre>{
+  "status": "error",
+  "message": "Something went wrong",
+  "error": "Detailed error message"
+}</pre>
 </body>
 </html>
