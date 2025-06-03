@@ -100,6 +100,8 @@ api.interceptors.response.use(
   }
 );
 
+export default api;
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -204,4 +206,3 @@ AuthProvider.propTypes = {
 };
 
 export const useAuth = () => useContext(AuthContext);
-export default api;
