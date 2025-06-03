@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import jwtDecode from 'jwt-decode';
+import * as jwtDecode from 'jwt-decode';
 import PropTypes from 'prop-types';
 
 const BASE_URL = 'https://be-rest-928661779459.us-central1.run.app';
@@ -9,30 +9,34 @@ const BASE_URL = 'https://be-rest-928661779459.us-central1.run.app';
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json'
-  }
 });
 
-// Request interceptor
+// Add a request interceptor to include the token in headers
 api.interceptors.request.use(async (config) => {
-  const token = getCookie('accessToken');
+  // Get token from cookies
+  const token = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
   
   if (token) {
     try {
       const decoded = jwtDecode(token);
       const currentTime = Date.now() / 1000;
 
-      // Jika token akan expired dalam 15 detik
-      if (decoded.exp < currentTime + 15) {
-        const newToken = await refreshToken();
+      if (decoded.exp < currentTime) {
+        // Token expired, try to refresh
+        const response = await axios.get(`${BASE_URL}/token`, {
+          withCredentials: true
+        });
+        const newToken = response.data.accessToken;
+        // Set new token in cookie
+        document.cookie = `accessToken=${newToken}; path=/; secure; sameSite=Strict; max-age=${60 * 60 * 24}`; // 1 day
         config.headers.Authorization = `Bearer ${newToken}`;
         return config;
       }
 
       config.headers.Authorization = `Bearer ${token}`;
     } catch (error) {
-      clearAuthCookies();
+      // Clear token on error
+      document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       window.location.href = '/login';
       return Promise.reject(error);
     }
@@ -43,7 +47,7 @@ api.interceptors.request.use(async (config) => {
   return Promise.reject(error);
 });
 
-// Response interceptor
+// Response interceptor: handle 401
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -53,11 +57,17 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       
       try {
-        const newToken = await refreshToken();
+        const response = await axios.get(`${BASE_URL}/token`, {
+          withCredentials: true
+        });
+        const newToken = response.data.accessToken;
+        document.cookie = `accessToken=${newToken}; path=/; secure; sameSite=Strict; max-age=${60 * 60 * 24}`;
+        
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        clearAuthCookies();
+        document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
@@ -67,40 +77,15 @@ api.interceptors.response.use(
   }
 );
 
-// Helper functions
-const getCookie = (name) => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-};
-
-const setCookie = (name, value, maxAge) => {
-  document.cookie = `${name}=${value}; path=/; secure; sameSite=Strict${maxAge ? `; max-age=${maxAge}` : ''}`;
-};
-
-const clearAuthCookies = () => {
-  document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-  document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-};
-
-const refreshToken = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/token`, { withCredentials: true });
-    const newToken = response.data.accessToken;
-    setCookie('accessToken', newToken, 30); // 30 detik
-    return newToken;
-  } catch (error) {
-    throw error;
-  }
-};
-
-// Auth Context
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [accessToken, setAccessToken] = useState(null);
-  const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(
+    document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1] || null
+  );
   const navigate = useNavigate();
+
+  
 
   const login = async (email, password) => {
     try {
@@ -123,19 +108,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (name, email, password, role = 'petugas') => {
+  const register = async (name, email, password) => {
     try {
-      const res = await api.post('/register', { name, email, password, role });
-      if (res.status === 200) {
-        navigate('/login');
-        return { success: true };
-      }
+      await api.post('/register', { name, email, password });
+      navigate('/login');
     } catch (error) {
-      console.error('Registration error:', error.response?.data);
-      return {
-        success: false,
-        error: error.response?.data?.message || 'Registrasi gagal'
-      };
+      console.error('Registration failed:', error);
+      throw error;
     }
   };
 
@@ -143,43 +122,56 @@ export const AuthProvider = ({ children }) => {
     try {
       await api.delete('/logout');
     } catch (err) {
-      console.error('Logout error:', err);
+      console.error('Logout API error:', err);
     } finally {
       setAccessToken(null);
-      setUser(null);
-      clearAuthCookies();
+      // Clear all auth cookies
+      document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       navigate('/login');
     }
   };
 
-  // Initialize auth state
-  useEffect(() => {
-    const token = getCookie('accessToken');
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setAccessToken(token);
-        setUser({
-          id: decoded.id,
-          name: decoded.name,
-          email: decoded.email,
-          role: decoded.role
-        });
-      } catch (error) {
-        clearAuthCookies();
-      }
+  const refreshAccessToken = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/token`, {
+        withCredentials: true,
+      });
+      const accessToken = response.data.accessToken;
+      document.cookie = `accessToken=${accessToken}; path=/; secure; sameSite=Strict; max-age=${60 * 60 * 24}`;
+      const decoded = jwtDecode(accessToken);
+      setAccessToken(accessToken);
+      return { accessToken, decoded };
+    } catch (error) {
+      logout();
+      throw error;
     }
-  }, []);
+  };
+
+  // Verify token on component mount
+  useEffect(() => {
+    const verifyToken = async () => {
+      if (accessToken) {
+        try {
+          await api.get('/users');
+        } catch (error) {
+          console.error('Token verification failed:', error);
+          logout();
+        }
+      }
+    };
+    verifyToken();
+  }, [accessToken]);
 
   return (
     <AuthContext.Provider
       value={{ 
-        user,
-        accessToken,
+        accessToken, 
         isAuthenticated: !!accessToken,
         login, 
         register,
-        logout,
+        logout, 
+        refreshAccessToken,
         api
       }}
     >
