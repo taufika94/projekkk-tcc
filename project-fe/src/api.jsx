@@ -103,15 +103,6 @@ api.interceptors.response.use(
 
 export default api;
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { BASE_API } from '../../utils';
-import api from '../api';
-import * as jwtDecode from 'jwt-decode'; // Menggunakan jwt-decode
-import Cookies from 'js-cookie'; // Pastikan Anda menginstal js-cookie
-import PropTypes from 'prop-types';
-
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
