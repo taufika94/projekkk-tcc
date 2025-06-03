@@ -1,24 +1,160 @@
-import express from "express";
-import cors from "cors";
-import UserRoute from "./routes/UserRoute.js";
-import WeaponRoute from "./routes/WeaponRoute.js";
-import TransactionRoute from "./routes/TransactionRoute.js";
-import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Documentation</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
+    h1 { color: #333; }
+    h2 { color: #007acc; }
+    code, pre { background-color: #eee; padding: 10px; display: block; white-space: pre-wrap; }
+    .endpoint { margin-bottom: 30px; }
+    hr { margin: 40px 0; }
+  </style>
+</head>
+<body>
+  <h1>📘 API Documentation</h1>
 
+  <p><strong>Base URL:</strong> <code>https://be-rest-928661779459.us-central1.run.app</code></p>
 
-dotenv.config();
+  <hr>
 
-const app = express();
-app.set("view engine", "ejs");
+  <h2>🧑 User API</h2>
 
-app.use(cookieParser());
-app.use(cors({ credentials:true,origin:[
-  'https://projek-dot-c-05-451109.ue.r.appspot.com'
-]
- }));
-app.use(express.json());
-app.get("/", (req, res) => res.render("index"));
-app.use(UserRoute, WeaponRoute, TransactionRoute);
+  <div class="endpoint">
+    <h3>📥 Get All Users</h3>
+    <code>GET /users</code>
+    <pre>{
+  "id": "",
+  "name": "",
+  "email": "",
+  "password": "",
+  "role": ""
+}</pre>
+  </div>
 
-app.listen(5000, () => console.log("Server connected"));
+  <div class="endpoint">
+    <h3>📥 Get User by ID</h3>
+    <code>GET /users/:id</code>
+  </div>
+
+  <div class="endpoint">
+    <h3>🗑️ Delete User by ID</h3>
+    <code>DELETE /delete-users/:id</code>
+  </div>
+
+  <div class="endpoint">
+    <h3>✏️ Update User</h3>
+    <code>PUT /update-users/:id</code>
+    <pre>{
+  "name": "",
+  "email": "",
+  "password": "",
+  "role": ""
+}</pre>
+  </div>
+
+  <div class="endpoint">
+    <h3>➕ Add New User</h3>
+    <code>POST /add-users</code>
+    <pre>{
+  "name": "",
+  "email": "",
+  "password": "",
+  "role": ""
+}</pre>
+  </div>
+
+  <hr>
+
+  <h2>🔫 Weapons API</h2>
+
+  <div class="endpoint">
+    <h3>📥 Get All Weapons</h3>
+    <code>GET /weapons</code>
+    <pre>{
+  "name": "",
+  "type": "",
+  "serialNum": "",
+  "condition": "",
+  "location": "",
+  "stok": ""
+}</pre>
+  </div>
+
+  <div class="endpoint">
+    <h3>📥 Get Weapon by ID</h3>
+    <code>GET /weapons/:id</code>
+  </div>
+
+  <div class="endpoint">
+    <h3>🗑️ Delete Weapon</h3>
+    <code>DELETE /delete-weapons/:id</code>
+  </div>
+
+  <div class="endpoint">
+    <h3>✏️ Update Weapon</h3>
+    <code>PUT /update-weapons/:id</code>
+    <pre>{
+  "name": "",
+  "type": "",
+  "serialNum": "",
+  "condition": "",
+  "location": "",
+  "stok": ""
+}</pre>
+  </div>
+
+  <div class="endpoint">
+    <h3>➕ Add Weapon</h3>
+    <code>POST /add-weapons</code>
+    <pre>{
+  "name": "",
+  "type": "",
+  "serialNum": "",
+  "condition": "",
+  "location": "",
+  "stok": ""
+}</pre>
+  </div>
+
+  <hr>
+
+  <h2>📦 Transaction API</h2>
+
+  <div class="endpoint">
+    <h3>📥 Get Transactions by User</h3>
+    <code>GET /transactions/:userId</code>
+    <pre>{
+  "type_transaction": "",
+  "amount": "",
+  "information": "",
+  "status": "",
+  "userId": "",
+  "weaponId": ""
+}</pre>
+  </div>
+
+  <div class="endpoint">
+    <h3>🗑️ Delete Transaction</h3>
+    <code>DELETE /delete-transactions</code>
+    <pre>{
+  "transactionId": ""
+}</pre>
+  </div>
+
+  <div class="endpoint">
+    <h3>✏️ Update Transaction</h3>
+    <code>PUT /update-transaction</code>
+    <pre>{
+  "type_transaction": "",
+  "amount": "",
+  "information": "",
+  "status": "",
+  "userId": "",
+  "weaponId": ""
+}</pre>
+  </div>
+
+</body>
+</html>
