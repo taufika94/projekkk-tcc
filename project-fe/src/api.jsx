@@ -91,20 +91,18 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await api.post('/login', { email, password });
       
+      // Sesuai dengan response dari backend
       const { accessToken, safeUserData } = res.data;
       
       setAccessToken(accessToken);
       setUser(safeUserData);
-      setCookie('accessToken', accessToken, 30); // 30 detik sesuai backend
+      document.cookie = `accessToken=${accessToken}; path=/; secure; sameSite=Strict; max-age=30`;
       
       navigate('/home');
       return { success: true, user: safeUserData };
     } catch (err) {
-      console.error('Login error:', err.response?.data);
-      return { 
-        success: false, 
-        error: err.response?.data?.message || 'Email atau password salah' 
-      };
+      console.error('Login failed:', err);
+      return { success: false, error: err.response?.data?.message || 'Login failed' };
     }
   };
 
