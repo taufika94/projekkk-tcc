@@ -149,24 +149,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Verify token on component mount
-  const refreshToken = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/token`, {
-      withCredentials: true
-    });
-    const newToken = response.data.accessToken;
-    document.cookie = `accessToken=${newToken}; path=/; secure; sameSite=Strict; max-age=30`;
-    return newToken;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const clearAuth = () => {
-  document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-  setUser(null);
-  setAccessToken(null);
-};
+  useEffect(() => {
+    const verifyToken = async () => {
+      if (accessToken) {
+        try {
+          await api.get('/users');
+        } catch (error) {
+          console.error('Token verification failed:', error);
+          logout();
+        }
+      }
+    };
+    verifyToken();
+  }, [accessToken]);
 
   return (
     <AuthContext.Provider
