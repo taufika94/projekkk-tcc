@@ -128,37 +128,37 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        try {
-            const response = await axios.post(`${BASE_API}/login`, {
-                email,
-                password
-            }, {
-                withCredentials: true, // Penting agar cookie terkirim
-            });
-            const { accessToken, safeUserData } = response.data;
-            Cookies.set('token', accessToken, { expires: 1 }); // Simpan token di cookies
-            setUser (safeUserData);
-            setIsAuthenticated(true);
-            navigate('/home');
-        } catch (error) {
-            console.error('Login failed:', error);
-            throw error;
-        }
-    };
+    try {
+        const response = await axios.post(`${BASE_API}/login`, { // Menggunakan BASE_API
+            email,
+            password
+        }, {
+            withCredentials: true,
+        });
+        const { accessToken, safeUserData } = response.data;
+        Cookies.set('token', accessToken, { expires: 1 });
+        setUser (safeUserData);
+        setIsAuthenticated(true);
+        navigate('/home');
+    } catch (error) {
+        console.error('Login failed:', error);
+        throw error;
+    }
+};
 
     const register = async (name, email, password) => {
-        try {
-            await axios.post(`${BASE_API}/register`, {
-                name,
-                email,
-                password
-            });
-            navigate('/login');
-        } catch (error) {
-            console.error('Registration failed:', error);
-            throw error;
-        }
-    };
+    try {
+        await axios.post(`${BASE_API}/register`, { // Menggunakan BASE_API
+            name,
+            email,
+            password
+        });
+        navigate('/login');
+    } catch (error) {
+        console.error('Registration failed:', error);
+        throw error;
+    }
+};
 
     const logout = async () => {
         try {
