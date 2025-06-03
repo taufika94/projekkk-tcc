@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }) => {
       
       setAccessToken(accessToken);
       setUser(safeUserData);
-      setCookie('accessToken', accessToken, 100); // 30 detik sesuai backend
+      setCookie('accessToken', accessToken, 30); // 30 detik sesuai backend
       
       navigate('/home');
       return { success: true, user: safeUserData };
