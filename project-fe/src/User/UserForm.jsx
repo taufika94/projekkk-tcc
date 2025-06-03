@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
+
 const UserForm = () => {
   const { api } = useAuth();
   const navigate = useNavigate();
