@@ -1,44 +1,51 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-// Import the cookie library
+import api from '../api';
+import { BASE_API } from '../../utils';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser ] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem('token'));
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
 
     // Check if user is authenticated on initial load
-    useEffect(() => {
-        const verifyToken = async () => {
-            /// Get token from cookies
-            if (token) {
-                try {
-                    const response = await axios.get('https://be-rest-928661779459.us-central1.run.app0/users', {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    setIsAuthenticated(true);
-                    setUser (response.data);
-                } catch (error) {
-                    logout(); // Call logout if token verification fails
-                }
-            }
-        };
-        verifyToken();
-    }, []);
+    // useEffect(() => {
+      
+    //     const verifyToken = async () => {
+    //         if (token) {
+    //             try {
+    //                 const response = await axios.get('http://localhost:5000/users', {
+    //                     headers: {
+    //                         'Authorization': `Bearer ${token}`
+    //                     }
+    //                 });
+    //                 setIsAuthenticated(true);
+                    
+    //                 setUser (response.data);
+    //             } catch (error) {
+                  
+    //             }
+    //         }
+    //     };
+    //     verifyToken();
+    // }, [token]);
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post('https://be-rest-928661779459.us-central1.run.app/login', {
+            const response = await axios.post(`${BASE_API}/login`, {
                 email,
                 password
+            },
+            {
+              withCredentials: true, // penting agar cookie terkirim
             });
             const { accessToken, safeUserData } = response.data;
-         
+            localStorage.setItem('token', accessToken);
+            setToken(accessToken);
             setUser (safeUserData);
             setIsAuthenticated(true);
             navigate('/home');
@@ -50,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (name, email, password) => {
         try {
-            await axios.post('https://be-rest-928661779459.us-central1.run.app/register', {
+            await axios.post(`${BASE_API}/register`, {
                 name,
                 email,
                 password
@@ -62,25 +69,38 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = async () => {
-        try {
-            await axios.delete('https://be-rest-928661779459.us-central1.run.app/logout', {
-                withCredentials: true // Ensure cookies are sent
-            });
-            // Remove token from cookies
-            setUser (null);
+    // In your AuthContext.js
+  const logout = async () => {
+    console.log("click");
+    
+      try {
+          const response = await axios.delete(`${BASE_API}/logout`, {
+              withCredentials: true
+          });
+          console.log(response);
+          
+          if (response.status === 200) {
+            localStorage.removeItem('token');
+            setToken(null);
+            setUser(null);
             setIsAuthenticated(false);
             navigate('/login');
-        } catch (error) {
-            console.error('Logout failed:', error);
-        }
-    };
+          }
+          
+      } catch (error) {
+          console.error('Logout failed:', error);
+      }
+  };
 
-    return (
-        <AuthContext.Provider value={{ user, isAuthenticated, login, register, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  // Add logout to the AuthContext.Provider value
+  return (
+      <AuthContext.Provider value={{ user, token, isAuthenticated, login, register, logout, api }}>
+          {children}
+      </AuthContext.Provider>
+  );
+
+
+    
 };
 
 export const useAuth = () => useContext(AuthContext);

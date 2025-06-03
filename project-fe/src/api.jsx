@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as jwtDecode from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import PropTypes from 'prop-types';
 
 const BASE_URL = 'https://be-rest-928661779459.us-central1.run.app';
@@ -9,34 +9,30 @@ const BASE_URL = 'https://be-rest-928661779459.us-central1.run.app';
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
-// Add a request interceptor to include the token in headers
+// Request interceptor
 api.interceptors.request.use(async (config) => {
-  // Get token from cookies
-  const token = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
+  const token = getCookie('accessToken');
   
   if (token) {
     try {
       const decoded = jwtDecode(token);
       const currentTime = Date.now() / 1000;
 
-      if (decoded.exp < currentTime) {
-        // Token expired, try to refresh
-        const response = await axios.get(`${BASE_URL}/token`, {
-          withCredentials: true
-        });
-        const newToken = response.data.accessToken;
-        // Set new token in cookie
-        document.cookie = `accessToken=${newToken}; path=/; secure; sameSite=Strict; max-age=${60 * 60 * 24}`; // 1 day
+      // Jika token akan expired dalam 15 detik
+      if (decoded.exp < currentTime + 15) {
+        const newToken = await refreshToken();
         config.headers.Authorization = `Bearer ${newToken}`;
         return config;
       }
 
       config.headers.Authorization = `Bearer ${token}`;
     } catch (error) {
-      // Clear token on error
-      document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      clearAuthCookies();
       window.location.href = '/login';
       return Promise.reject(error);
     }
@@ -47,7 +43,7 @@ api.interceptors.request.use(async (config) => {
   return Promise.reject(error);
 });
 
-// Response interceptor: handle 401
+// Response interceptor
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -57,17 +53,11 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       
       try {
-        const response = await axios.get(`${BASE_URL}/token`, {
-          withCredentials: true
-        });
-        const newToken = response.data.accessToken;
-        document.cookie = `accessToken=${newToken}; path=/; secure; sameSite=Strict; max-age=${60 * 60 * 24}`;
-        
+        const newToken = await refreshToken();
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        clearAuthCookies();
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
@@ -77,42 +67,75 @@ api.interceptors.response.use(
   }
 );
 
+// Helper functions
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+};
+
+const setCookie = (name, value, maxAge) => {
+  document.cookie = `${name}=${value}; path=/; secure; sameSite=Strict${maxAge ? `; max-age=${maxAge}` : ''}`;
+};
+
+const clearAuthCookies = () => {
+  document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+};
+
+const refreshToken = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/token`, { withCredentials: true });
+    const newToken = response.data.accessToken;
+    setCookie('accessToken', newToken, 30); // 30 detik
+    return newToken;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Auth Context
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [accessToken, setAccessToken] = useState(
-    document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1] || null
-  );
+  const [accessToken, setAccessToken] = useState(null);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-
-  
 
   const login = async (email, password) => {
     try {
       const res = await api.post('/login', { email, password });
       
-      // Sesuai dengan response dari backend
       const { accessToken, safeUserData } = res.data;
       
       setAccessToken(accessToken);
       setUser(safeUserData);
-      document.cookie = `accessToken=${accessToken}; path=/; secure; sameSite=Strict; max-age=30`;
+      setCookie('accessToken', accessToken, 30); // 30 detik sesuai backend
       
       navigate('/home');
       return { success: true, user: safeUserData };
     } catch (err) {
-      console.error('Login failed:', err);
-      return { success: false, error: err.response?.data?.message || 'Login failed' };
+      console.error('Login error:', err.response?.data);
+      return { 
+        success: false, 
+        error: err.response?.data?.message || 'Email atau password salah' 
+      };
     }
   };
 
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, role = 'petugas') => {
     try {
-      await api.post('/register', { name, email, password });
-      navigate('/login');
+      const res = await api.post('/register', { name, email, password, role });
+      if (res.status === 200) {
+        navigate('/login');
+        return { success: true };
+      }
     } catch (error) {
-      console.error('Registration failed:', error);
-      throw error;
+      console.error('Registration error:', error.response?.data);
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Registrasi gagal'
+      };
     }
   };
 
@@ -120,56 +143,43 @@ export const AuthProvider = ({ children }) => {
     try {
       await api.delete('/logout');
     } catch (err) {
-      console.error('Logout API error:', err);
+      console.error('Logout error:', err);
     } finally {
       setAccessToken(null);
-      // Clear all auth cookies
-      document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-      document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      setUser(null);
+      clearAuthCookies();
       navigate('/login');
     }
   };
 
-  const refreshAccessToken = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/token`, {
-        withCredentials: true,
-      });
-      const accessToken = response.data.accessToken;
-      document.cookie = `accessToken=${accessToken}; path=/; secure; sameSite=Strict; max-age=${60 * 60 * 24}`;
-      const decoded = jwtDecode(accessToken);
-      setAccessToken(accessToken);
-      return { accessToken, decoded };
-    } catch (error) {
-      logout();
-      throw error;
-    }
-  };
-
-  // Verify token on component mount
+  // Initialize auth state
   useEffect(() => {
-    const verifyToken = async () => {
-      if (accessToken) {
-        try {
-          await api.get('/users');
-        } catch (error) {
-          console.error('Token verification failed:', error);
-          logout();
-        }
+    const token = getCookie('accessToken');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setAccessToken(token);
+        setUser({
+          id: decoded.id,
+          name: decoded.name,
+          email: decoded.email,
+          role: decoded.role
+        });
+      } catch (error) {
+        clearAuthCookies();
       }
-    };
-    verifyToken();
-  }, [accessToken]);
+    }
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{ 
-        accessToken, 
+        user,
+        accessToken,
         isAuthenticated: !!accessToken,
         login, 
         register,
-        logout, 
-        refreshAccessToken,
+        logout,
         api
       }}
     >
