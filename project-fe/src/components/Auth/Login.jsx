@@ -54,7 +54,7 @@ const Login = () => {
             <div className="form-group">
               <label htmlFor="personnelId">
                 <span className="input-icon">👤</span>
-                Username
+                Email
               </label>
               <input
                 type="text"
