@@ -1,36 +1,42 @@
-   import axios from 'axios';
-   import { createContext, useContext, useEffect, useState } from 'react';
-   import { useNavigate } from 'react-router-dom';
-   import Cookies from "js-cookie";
+import axios from 'axios';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import jwtDecode from 'jwt-decode';
+import PropTypes from 'prop-types';
 
-   const api = axios.create({
-       baseURL: 'https://be-rest-928661779459.us-central1.run.app',
-       withCredentials: true,
-   });
+const BASE_URL = 'https://be-rest-928661779459.us-central1.run.app';
 
-   // Add a request interceptor to include the token in headers
-   api.interceptors.request.use(async (config) => {
-  let token = localStorage.getItem('accessToken');
+const api = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
+});
+
+// Add a request interceptor to include the token in headers
+api.interceptors.request.use(async (config) => {
+  let token = Cookies.get('accessToken') || localStorage.getItem('accessToken');
   
   if (token) {
-    const decoded = jwtDecode(token);
-    const currentTime = Date.now() / 1000;
+    try {
+      const decoded = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
 
-    if (decoded.exp < currentTime) {
-      try {
+      if (decoded.exp < currentTime) {
         const response = await axios.get(`${BASE_URL}/token`, {
           withCredentials: true
         });
         token = response.data.accessToken;
+        Cookies.set('accessToken', token, { secure: true, sameSite: 'Strict' });
         localStorage.setItem('accessToken', token);
-      } catch (error) {
-        localStorage.removeItem('accessToken');
-        window.location.href = '/login';
-        return Promise.reject(error);
       }
-    }
 
-    config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
+    } catch (error) {
+      Cookies.remove('accessToken');
+      localStorage.removeItem('accessToken');
+      window.location.href = '/login';
+      return Promise.reject(error);
+    }
   }
 
   return config;
@@ -38,74 +44,104 @@
   return Promise.reject(error);
 });
 
-// Middleware Response: handle 401
+// Response interceptor: handle 401
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('accessToken');
-      window.location.href = '/login';
+  async (error) => {
+    const originalRequest = error.config;
+    
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      try {
+        const response = await axios.get(`${BASE_URL}/token`, {
+          withCredentials: true
+        });
+        const newToken = response.data.accessToken;
+        Cookies.set('accessToken', newToken, { secure: true, sameSite: 'Strict' });
+        localStorage.setItem('accessToken', newToken);
+        
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        Cookies.remove('accessToken');
+        localStorage.removeItem('accessToken');
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
     }
+    
     return Promise.reject(error);
   }
 );
 
-export default api;
-
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [accessToken, setAccessToken] = useState(Cookies.get("accessToken") || null);
+  const [accessToken, setAccessToken] = useState(
+    Cookies.get('accessToken') || localStorage.getItem('accessToken') || null
+  );
+  const navigate = useNavigate();
 
   const login = async (username, password) => {
     try {
-      const res = await axios.post(`${BASE_URL}/login`, { username, password });
+      const res = await api.post('/login', { username, password });
       setAccessToken(res.data.accessToken);
 
-      // Simpan refresh token di cookie (default 5 hari)
-      Cookies.set("refreshToken", res.data.refreshToken, {
+      // Simpan token di Cookies dan localStorage
+      Cookies.set('accessToken', res.data.accessToken, {
         secure: true,
-        sameSite: "Strict",
-        expires: 5,
+        sameSite: 'Strict',
+        expires: 1, // 1 hari
+      });
+      localStorage.setItem('accessToken', res.data.accessToken);
+
+      // Simpan refresh token di cookie
+      Cookies.set('refreshToken', res.data.refreshToken, {
+        secure: true,
+        sameSite: 'Strict',
+        expires: 5, // 5 hari
       });
 
+      navigate('/home');
       return true;
     } catch (err) {
-      console.error("Login failed:", err);
+      console.error('Login failed:', err);
       return false;
     }
   };
 
   const logout = () => {
     setAccessToken(null);
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
+    Cookies.remove('accessToken');
+    Cookies.remove('refreshToken');
+    localStorage.removeItem('accessToken');
+    navigate('/login');
   };
 
   const refreshAccessToken = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/token`, {
-        withCredentials: true,
-      });
-      setAccessToken(res.data.accessToken);
-      return res.data.accessToken;
+      const res = await api.get('/token');
+      const newToken = res.data.accessToken;
+      setAccessToken(newToken);
+      Cookies.set('accessToken', newToken, { secure: true, sameSite: 'Strict' });
+      localStorage.setItem('accessToken', newToken);
+      return newToken;
     } catch (err) {
-      console.error("Token refresh failed:", err);
+      console.error('Token refresh failed:', err);
       logout();
       return null;
     }
   };
 
-  // Middleware untuk memeriksa token saat aplikasi dimuat
+  // Verifikasi token saat komponen mount
   useEffect(() => {
     const verifyToken = async () => {
       if (accessToken) {
         try {
-          await axios.get(`${BASE_URL}/users`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          });
+          await api.get('/users/me');
         } catch (error) {
-          console.error("Token verification failed:", error);
+          console.error('Token verification failed:', error);
           logout();
         }
       }
@@ -115,7 +151,14 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ accessToken, login, logout, refreshAccessToken }}
+      value={{ 
+        accessToken, 
+        isAuthenticated: !!accessToken,
+        login, 
+        logout, 
+        refreshAccessToken,
+        api
+      }}
     >
       {children}
     </AuthContext.Provider>
@@ -126,5 +169,5 @@ AuthProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const useAuthContext = () => useContext(AuthContext);
+export const useAuth = () => useContext(AuthContext);
+export default api;
